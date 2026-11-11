@@ -1,0 +1,24 @@
+# systemd unit for running the site as a service (next start).
+# 1) Edit WorkingDirectory / User / PORT / DATABASE_URL below to match the server.
+# 2) sudo cp deploy/laundry.service /etc/systemd/system/laundry.service
+# 3) sudo systemctl daemon-reload && sudo systemctl enable --now laundry
+# Logs: journalctl -u laundry -f
+
+[Unit]
+Description=Laundry website (Next.js)
+After=network.target
+
+[Service]
+Type=simple
+User=www-data
+WorkingDirectory=/var/www/laundry
+Environment=NODE_ENV=production
+Environment=PORT=3000
+# Optional: only /api/health uses the database. Uncomment if you have Postgres.
+# Environment=DATABASE_URL=postgresql://user:password@127.0.0.1:5432/app_db
+ExecStart=/usr/bin/env npm run start
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target
